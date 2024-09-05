@@ -3,4 +3,4 @@ def test_main():
     print('hi')
 
 print('hi')
-pirnt('hi2')
+print('hi2')
