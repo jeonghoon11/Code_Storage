@@ -1,3 +1,4 @@
+//2851 슈퍼마리오
 #include <stdio.h>
 #include <stdlib.h>
 
