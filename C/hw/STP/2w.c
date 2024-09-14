@@ -30,7 +30,7 @@ void reverseBubbleSort(int arr[]) {
 }
 
 int main(void) {
-    FILE *fp = fopen("input_1.dat", "r");
+    FILE *fp = fopen("input.dat", "r");
     int arr[25] = {0};
 
     for(int i = 0; i < 24; i++)
