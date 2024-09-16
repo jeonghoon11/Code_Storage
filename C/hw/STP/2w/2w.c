@@ -1,32 +1,21 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-void bubbleSort(int arr[]) {
-    int temp;
-    
-    for(int i = 0; i < 10; i++) {
-        for(int j = 0; j < 9 - i; j++) {
-            if(arr[j] > arr[j + 1]) {
-                temp = arr[j];
-                arr[j] = arr[j + 1];
-                arr[j + 1] = temp;
-            }
-        }
+int binary_search(int data[], int start, int  end, int key)
+{
+    while (start <= end)
+    {
+        int mid = (start + end) / 2;
+ 
+        if (data[mid] < key)
+            start = mid + 1;
+        
+        else if (data[mid] > key)
+            end = mid - 1;
+        
+        else return mid;
     }
-}
-
-void reverseBubbleSort(int arr[]) {
-    int temp;
-    
-    for(int i = 0; i < 10; i++) {
-        for(int j = 0; j < 9 - i; j++) {
-            if(arr[j] < arr[j + 1]) {
-                temp = arr[j];
-                arr[j] = arr[j + 1];
-                arr[j + 1] = temp;
-            }
-        }
-    }
+    return -1;
 }
 
 int main(void) {
@@ -37,37 +26,25 @@ int main(void) {
     }
 
     int arr[10] = {0};
-    int input = 0;
+    int key = 1, ans;
 
     for(int i = 0; i < 10; i++)
         fscanf(fp, "%d", &arr[i]);  
 
-    bubbleSort(arr);
+    
 
     while(1){
-        printf("숫자를 입력하세요 (종료 : 0)    : ");
-        scanf("%d", &input);
-
-        int found = 0;
-
-        if(input == 0){
-            printf("------실행을 종료합니다.-------\n");
-            break;
+        printf("찾을 값을 입력하시오: ");
+        scanf("%d", &key);
+        if(key == 0)    break;
+        else{
+            ans = binary_search(arr, 0, 9, key);
+            
+            if(ans == -1)   printf("%d값은 없습니다.\n", key);
+            else            printf("%d는 %d번째 위치합니다.\n", ans + 1, key);
         }
-        
-        for(int i = 0; i < 10; i++) {
-            if(input == arr[i]){
-                printf("%d는 %d번째 수 입니다.\n", input, i + 1);
-                found = 1;
-                break;
-            }
-        }
-
-        if(!found) {
-            printf("%d는 존재하지 않슶니다.\n", input);
-        }   
     }
-
+    
     fclose(fp);
 
     return 0;
