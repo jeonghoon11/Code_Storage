@@ -3,7 +3,7 @@
 #include <string.h>
 #define SIZE 20
 #define WORD_LEN 50
-int BubbleSort(char arr[][WORD_LEN], int size, char target[]);
+int binary_search(char arr[][WORD_LEN], int size, char target[]);
 
 int main(void) {
    FILE* fp;
@@ -71,7 +71,7 @@ int main(void) {
          break;
       }
       else {
-         int result = BubbleSort(wordArr, index, word);
+         int result = binary_search(wordArr, index, word);
          if (result != -1) {
             printf("%s는 %d번째입니다.\n", word, result + 1);
          }
