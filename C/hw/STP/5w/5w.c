@@ -21,15 +21,14 @@ int main(void) {
     //파일 전체 읽기 코드
     //feof가 파일포인터가 마지막에 있는지 검사.
     //마지막이 아닌곳에 있으면 0, 마지막에 있다면 0이 아닌값 반환
-    while (feof(fp) == 0) {      
-        char str[MAX_SIZE_STRING];
-        fgets(str, MAX_SIZE_STRING, fp);
-        
-        while((ch=getchar())!=EOF){
-            if(ch>'a'&&ch<='z')     countE++;
-            else if (ch>='A'&&ch<='Z') countE++;
-            else if (ch>='0'&&ch<='9') countN++;
-            else countS++;
+    while ((ch = fgetc(fp)) != EOF) {
+        if ((ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z')) {
+            countE++;
+        } else if (ch >= '0' && ch <= '9') {
+            countN++;
+        } else if ((ch >= 33 && ch <= 47) || (ch >= 58 && ch <= 64) || (ch >= 91 && ch <= 96) || (ch >= 123 && ch <= 126)) {
+            //특수문자에 스페이스바 포함할거면 32부터
+            countS++;
         }
     }
 
@@ -45,7 +44,7 @@ int main(void) {
 
 
 /*
-    파일 전체 읽기 코드
+    *파일 전체 읽기 코드*
     feof가 파일포인터가 마지막에 있는지 검사.
     마지막이 아닌곳에 있으면 0, 마지막에 있다면 0이 아닌값 반환
     while (feof(fp) == 0) {      
