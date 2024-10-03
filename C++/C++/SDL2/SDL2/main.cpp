@@ -15,7 +15,7 @@ int main(int argc, char** argv)
     buttons[2] = { 0, 2, "meow" };
     // { 버튼플래그, 누를시 반환할 id값, 표시될 문자열 }
 
-    SDL_MessageBoxData messageBoxData = {SDL_MESSAGEBOX_WARNING,NULL,"Error","The Quick Brown Fox Jumps Over The Lazy Dog.",SDL_arraysize(buttons),buttons,NULL};
+    SDL_MessageBoxData messageBoxData = {SDL_MESSAGEBOX_WARNING,NULL,"Error","The Quick Brown Fox Jumps Over The Lazy Dog.",SDL_arraysize(buttons),buttons,NqULL};
     //{ 메시지플래그, 부모윈도우, 제목, 내용, 버튼수, 버튼데이터, 색상 }
 
     int buttonid; // 사용자가 누른 버튼의 id가 저장될 변수
