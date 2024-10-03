@@ -1,6 +1,6 @@
-#include <stdio.h>
+#include <stdio.h> 
 #include <iostream>
-#include  <SDL.h>
+#include <SDL.h> 
 #include <SDL_image.h>
 
 
@@ -53,6 +53,18 @@ int main(int argc, char* argv[]) {
                 break;
             case SDL_QUIT:
                 quit = 1;
+                break;
+            case SDL_MOUSEBUTTONDOWN:
+                //std::cout << "Mouse button pressed: " << static_cast<int>(event.button.button) << std::endl;
+                //std::cout << "Mouse position: (" << event.button.x << ", " << event.button.y << ")" << std::endl;
+                printf("Mouse position: (%d, %d)\n", event.button.x, event.button.y);
+                break;
+            case SDL_MOUSEBUTTONUP:
+                //std::cout << "Mouse button released: " << static_cast<int>(event.button.button) << std::endl;
+                //std::cout << "Mouse position: (" << event.button.x << ", " << event.button.y << ")" << std::endl;
+                break;
+            case SDL_MOUSEMOTION:
+                //std::cout << "Mouse moved: (" << event.motion.x << ", " << event.motion.y << ")" << std::endl;
                 break;
             default:
                 break;
