@@ -1,32 +1,76 @@
-#include <SDL.h>
-#include <string>
+#include <stdio.h>
+#include <iostream>
+#include  <SDL.h>
+#include <SDL_image.h>
 
-int main(int argc, char** argv)
-{
-    SDL_Init(SDL_INIT_VIDEO);
-    SDL_Window* window = SDL_CreateWindow("windowName", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 640, 480, 0);
-    SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, 0);
-    //SDL_Event event;
-    //SDL_Rect rect = { 50, 50, 200, 200 };
 
-    SDL_MessageBoxButtonData buttons[3];
-    buttons[0] = { 0, 0, "no" };
-    buttons[1] = { SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT, 1, "ok" };
-    buttons[2] = { 0, 2, "meow" };
-    // { 버튼플래그, 누를시 반환할 id값, 표시될 문자열 }
+int main(int argc, char* argv[]) {
+    SDL_Window* window = NULL;
+    SDL_Renderer* renderer = NULL;
+    SDL_Surface* imageSurface = NULL;
+    SDL_Texture* texture = NULL;
+    SDL_Rect destRect;
 
-    SDL_MessageBoxData messageBoxData = {SDL_MESSAGEBOX_WARNING,NULL,"Error","The Quick Brown Fox Jumps Over The Lazy Dog.",SDL_arraysize(buttons),buttons,NqULL};
-    //{ 메시지플래그, 부모윈도우, 제목, 내용, 버튼수, 버튼데이터, 색상 }
+    // SDL 초기화
+    if (SDL_Init(SDL_INIT_VIDEO) < 0) {
+        printf("SDL Initialization Fail: %s\n", SDL_GetError());
+        return 1;
+    }
 
-    int buttonid; // 사용자가 누른 버튼의 id가 저장될 변수
-    SDL_ShowMessageBox(&messageBoxData, &buttonid);
-    std::printf("%d\n", buttonid);
+    // 윈도우 창 생성
+    window = SDL_CreateWindow("SDL2 Window",
+        SDL_WINDOWPOS_UNDEFINED,
+        SDL_WINDOWPOS_UNDEFINED,
+        640, 480,
+        SDL_WINDOW_SHOWN);
 
-    //버튼에 따른 결과 구현
-    if (buttonid == 1) printf("button : ok \n");
-    else if (buttonid == 2)  printf("button : meow \n");
-    else if (buttonid == -1) printf("error \n");
-   
+    if (!window) {
+        printf("SDL Initialization Fail: %s\n", SDL_GetError());
+        SDL_Quit();
+        return 1;
+    }
+
+    renderer = SDL_CreateRenderer(window, -1, 0);
+    IMG_Init(IMG_INIT_JPG | IMG_INIT_PNG);
+
+    imageSurface = IMG_Load("images/num_0.jpg");
+    texture = SDL_CreateTextureFromSurface(renderer, imageSurface);
+    destRect = { 0, 0, imageSurface->w, imageSurface->h };
+
+    // 메시지 루프
+    SDL_Event event;
+    int quit = 0;
+    while (!quit)
+    {
+        while (SDL_PollEvent(&event))
+        {
+            switch (event.type)
+            {
+            case SDL_KEYDOWN:
+                if (event.key.keysym.sym == SDLK_ESCAPE) {
+                    quit = 1;
+                }
+                break;
+            case SDL_QUIT:
+                quit = 1;
+                break;
+            default:
+                break;
+            }
+        }
+
+        SDL_RenderClear(renderer);
+        SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
+
+        SDL_RenderCopy(renderer, texture, NULL, &destRect);
+        SDL_RenderPresent(renderer);
+    }
+
+    // 종료
+    SDL_DestroyTexture(texture);
+    SDL_FreeSurface(imageSurface);
+
+    IMG_Quit();
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     SDL_Quit();
