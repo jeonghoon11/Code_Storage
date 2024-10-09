@@ -24,6 +24,10 @@ int main(int argc, char* argv[]) {
     SDL_Texture* texture = NULL;
     SDL_Rect destRect;
 
+    int randomMove; //몬스터 상하좌우 어디로 움직일지 결정
+
+    srand(time(NULL));
+    
     // SDL 초기화
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
         printf("SDL Initialization Fail: %s\n", SDL_GetError());
@@ -55,17 +59,23 @@ int main(int argc, char* argv[]) {
 
     //User
     findGold[0].texture = SDL_CreateTextureFromSurface(renderer, imageSurface1);
-    findGold[0].rect = { 1, 1, imageSurface1->w, imageSurface1->h };  //어디에 그릴지 위치 설정
+    findGold[0].rect = { rand() % 228, rand()%358, imageSurface1->w, imageSurface1->h };  //어디에 그릴지 위치 설정
     //Monster1
     findGold[1].texture = SDL_CreateTextureFromSurface(renderer, imageSurface2);
-    findGold[1].rect = { 1, 128, imageSurface1->w, imageSurface1->h }; //이미지 크기 + 1,2,3 이어서 두번째, 세번째 이미지를 의미.
+    findGold[1].rect = { rand() % 228, rand()%358, imageSurface1->w, imageSurface1->h };
     //Monster2
     findGold[2].texture = SDL_CreateTextureFromSurface(renderer, imageSurface3);
-    findGold[2].rect = { 128, 256, imageSurface1->w, imageSurface1->h };
+    findGold[2].rect = { rand() % 228, rand()%358, imageSurface1->w, imageSurface1->h };
     //Food
     findGold[3].texture = SDL_CreateTextureFromSurface(renderer, imageSurface4);
-    findGold[3].rect = { 228, 358, imageSurface1->w, imageSurface1->h };
+    findGold[3].rect = { rand() % 228, rand()%358, imageSurface1->w, imageSurface1->h };
 
+     while(SDL_HasIntersection(&findGold[0].rect, &findGold[1].rect) ||
+           SDL_HasIntersection(&findGold[0].rect, &findGold[2].rect)) {
+         findGold[1].rect = { rand() % 228, rand()%358, imageSurface1->w, imageSurface1->h };
+         findGold[2].rect = { rand() % 228, rand()%358, imageSurface1->w, imageSurface1->h };
+         }
+    
     // 메시지 루프
     SDL_Event event;
     int quit = 0;
@@ -92,8 +102,8 @@ int main(int argc, char* argv[]) {
                         case SDLK_s:
                             findGold[0].rect.y += 10; 
                             break;
-                        break;
                     }
+                break;
             }
         }
         //User와 Food가 충돌했는지 확인 
@@ -107,6 +117,7 @@ int main(int argc, char* argv[]) {
             SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_INFORMATION, NULL , "실력이 형편없네요...", window);
             quit = 1;
            }
+ 
 
         SDL_RenderClear(renderer);
         SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
@@ -135,6 +146,7 @@ int main(int argc, char* argv[]) {
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     SDL_Quit();
+
 
     return 0;
 }
