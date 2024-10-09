@@ -76,7 +76,14 @@ int main(int argc, char* argv[]) {
          findGold[2].rect = { rand() % 228, rand()%358, imageSurface1->w, imageSurface1->h };
          }
     
-    // 메시지 루프
+
+    //도저히 monster과 user의 delay 시간을 구분할 방법을 못찾아서 인터넷 참고했습니다.
+    Uint32 lastMonsterMoveTime = 0; // 몬스터가 마지막으로 움직인 시간 저장
+    Uint32 monsterMoveInterval = 400; // 몬스터가 400ms마다 움직이도록 설정
+
+
+
+    // 메시지 루프  0
     SDL_Event event;
     int quit = 0;
     while (!quit) {
@@ -106,6 +113,47 @@ int main(int argc, char* argv[]) {
                 break;
             }
         }
+
+        // 몬스터의 움직임을 별도의 시간 조건으로 처리
+        Uint32 currentTime = SDL_GetTicks();        //SDL_GetTicks() : 현재 시간 체크
+        if (currentTime - lastMonsterMoveTime > monsterMoveInterval) {
+            lastMonsterMoveTime = currentTime;
+            //Monster1
+            randomMove = rand() % 4;
+                switch (randomMove) {
+                    case 0:
+                        findGold[1].rect.x += 10;
+                        break;
+                    case 1:
+                        findGold[1].rect.x -= 10;
+                        break;
+                    case 2:
+                        findGold[1].rect.y += 10;
+                        break;
+                    case 3:
+                        findGold[1].rect.y -= 10;
+                        break;
+                }
+                
+                //Monster2
+                randomMove = rand() % 4;
+                switch (randomMove) {
+                    case 0:
+                        findGold[2].rect.x += 10;
+                        break;
+                    case 1:
+                        findGold[2].rect.x -= 10;
+                        break;
+                    case 2:
+                        findGold[2].rect.y += 10;
+                        break;
+                    case 3:
+                        findGold[2].rect.y -= 10;
+                        break;
+                }
+        }
+
+
         //User와 Food가 충돌했는지 확인 
         if (SDL_HasIntersection(&findGold[0].rect, &findGold[3].rect)) {
             SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_INFORMATION, NULL , "너 재능있어.", window);
@@ -117,7 +165,6 @@ int main(int argc, char* argv[]) {
             SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_INFORMATION, NULL , "실력이 형편없네요...", window);
             quit = 1;
            }
- 
 
         SDL_RenderClear(renderer);
         SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
