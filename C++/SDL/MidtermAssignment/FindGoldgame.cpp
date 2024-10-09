@@ -90,12 +90,23 @@ int main(int argc, char* argv[]) {
                             findGold[0].rect.y -= 10;
                             break;
                         case SDLK_s:
-                            findGold[0].rect.y += 10;
+                            findGold[0].rect.y += 10; 
                             break;
                         break;
                     }
             }
-        } 
+        }
+        //User와 Food가 충돌했는지 확인 
+        if (SDL_HasIntersection(&findGold[0].rect, &findGold[3].rect)) {
+            SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_INFORMATION, NULL , "너 재능있어.", window);
+            quit = 1;
+        }
+        //User와 Monster가 충돌했는지 확인
+        if (SDL_HasIntersection(&findGold[0].rect, &findGold[1].rect) ||
+            SDL_HasIntersection(&findGold[0].rect, &findGold[2].rect)) {
+            SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_INFORMATION, NULL , "실력이 형편없네요...", window);
+            quit = 1;
+           }
 
         SDL_RenderClear(renderer);
         SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
