@@ -1,8 +1,21 @@
-//주인공이 금을 찾으면 게임 종료. 중간마다 몬스터가 랜덤하게 움직인다. 몬스터를 피해 금을 찾아라!
-#include <stdio.h>
+//주인공이 금을 찾으면 게임 종료. 중간마다 몬스터가 랜덤하게 움직인다.
+// w s a d를 이용하여 주인공을 컨트롤하여 몬스터를 피해 금을 찾아라!
+#include <stdio.h> 
 #include <iostream>
 #include <SDL.h>
+#include <time.h>
 #include <SDL_image.h>
+#include <SDL_messagebox.h>
+#include <stdlib.h>
+
+#define WIDTH 130*2
+#define HEIGHT 130*3
+
+typedef struct {    //여러개의 이미지를 표현할 때 구조체가 필요하다고 하심.
+    SDL_Rect rect;
+    int dx, dy;     //왼쪽 상단의 위치값
+    SDL_Texture* texture;
+} FindGold;
 
 int main(int argc, char* argv[]) {
     SDL_Window* window = NULL;
@@ -21,24 +34,96 @@ int main(int argc, char* argv[]) {
     window = SDL_CreateWindow("SDL2 Window",
         SDL_WINDOWPOS_UNDEFINED,
         SDL_WINDOWPOS_UNDEFINED,
-        640, 480,
+        WIDTH, HEIGHT,
         SDL_WINDOW_SHOWN);
-
+		
     if (!window) {
         printf("SDL Initialization Fail: %s\n", SDL_GetError());
         SDL_Quit();
         return 1;
     }
 
+    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+    IMG_Init(IMG_INIT_JPG | IMG_INIT_PNG);
 
+    FindGold findGold[4]; // = { {WIDTH / 2, HEIGHT - 60, 100, 100}, 0 , 0, NULL };
+
+    SDL_Surface* imageSurface1 = IMG_Load("imgs/user.jpeg");
+    SDL_Surface* imageSurface2 = IMG_Load("imgs/monster.png");
+    SDL_Surface* imageSurface3 = IMG_Load("imgs/monster.png");
+    SDL_Surface* imageSurface4 = IMG_Load("imgs/food.jpeg");
+
+    //User
+    findGold[0].texture = SDL_CreateTextureFromSurface(renderer, imageSurface1);
+    findGold[0].rect = { 1, 1, imageSurface1->w, imageSurface1->h };  //어디에 그릴지 위치 설정
+    //Monster1
+    findGold[1].texture = SDL_CreateTextureFromSurface(renderer, imageSurface2);
+    findGold[1].rect = { 1, 128, imageSurface1->w, imageSurface1->h }; //이미지 크기 + 1,2,3 이어서 두번째, 세번째 이미지를 의미.
+    //Monster2
+    findGold[2].texture = SDL_CreateTextureFromSurface(renderer, imageSurface3);
+    findGold[2].rect = { 128, 256, imageSurface1->w, imageSurface1->h };
+    //Food
+    findGold[3].texture = SDL_CreateTextureFromSurface(renderer, imageSurface4);
+    findGold[3].rect = { 228, 358, imageSurface1->w, imageSurface1->h };
+
+    // 메시지 루프
+    SDL_Event event;
+    int quit = 0;
+    while (!quit) {
+        while (SDL_PollEvent(&event)) {
+            if (event.type == SDL_QUIT) {
+                quit = 1;
+            }
+            switch(event.type){
+                case SDL_QUIT:
+                    quit = 1;
+                    break;
+                case SDL_KEYDOWN:
+                    switch(event.key.keysym.sym){
+                        case SDLK_a:
+                            findGold[0].rect.x -= 10;
+                            break;
+                        case SDLK_d:
+                            findGold[0].rect.x += 10;
+                            break;
+                        case SDLK_w:
+                            findGold[0].rect.y -= 10;
+                            break;
+                        case SDLK_s:
+                            findGold[0].rect.y += 10;
+                            break;
+                        break;
+                    }
+            }
+        } 
+
+        SDL_RenderClear(renderer);
+        SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+        SDL_RenderCopy(renderer, findGold[1].texture, NULL, &findGold[1].rect);
+        SDL_RenderCopy(renderer, findGold[2].texture, NULL, &findGold[2].rect);
+        SDL_RenderCopy(renderer, findGold[3].texture, NULL, &findGold[3].rect);
+        SDL_RenderCopy(renderer, findGold[0].texture, NULL, &findGold[0].rect);
+        SDL_RenderPresent(renderer);
+    }
 
     // 종료
-    SDL_DestroyTexture(texture);
-    SDL_FreeSurface(imageSurface);
+
+    SDL_DestroyTexture(findGold[0].texture);
+    SDL_FreeSurface(imageSurface1);
+
+    SDL_DestroyTexture(findGold[1].texture);
+    SDL_FreeSurface(imageSurface2);
+
+    SDL_DestroyTexture(findGold[2].texture);
+    SDL_FreeSurface(imageSurface3);
+
+    SDL_DestroyTexture(findGold[3].texture);
+    SDL_FreeSurface(imageSurface4);
 
     IMG_Quit();
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     SDL_Quit();
+
     return 0;
 }
