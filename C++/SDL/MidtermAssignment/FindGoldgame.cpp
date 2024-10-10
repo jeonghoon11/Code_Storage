@@ -79,7 +79,7 @@ int main(int argc, char* argv[]) {
 
     //도저히 monster과 user의 delay 시간을 구분할 방법을 못찾아서 인터넷 참고했습니다.
     Uint32 lastMonsterMoveTime = 0; // 몬스터가 마지막으로 움직인 시간 저장
-    Uint32 monsterMoveInterval = 400; // 몬스터가 400ms마다 움직이도록 설정
+    Uint32 monsterMoveInterval = 200; // 몬스터가 400ms마다 움직이도록 설정
 
 
 
