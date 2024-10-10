@@ -55,7 +55,7 @@ int main(int argc, char* argv[]) {
     SDL_Surface* imageSurface1 = IMG_Load("imgs/user.jpeg");
     SDL_Surface* imageSurface2 = IMG_Load("imgs/monster.png");
     SDL_Surface* imageSurface3 = IMG_Load("imgs/monster.png");
-    SDL_Surface* imageSurface4 = IMG_Load("imgs/food.jpeg");
+    SDL_Surface* imageSurface4 = IMG_Load("imgs/Gold.jpeg");
 
     //User
     findGold[0].texture = SDL_CreateTextureFromSurface(renderer, imageSurface1);
@@ -66,7 +66,7 @@ int main(int argc, char* argv[]) {
     //Monster2
     findGold[2].texture = SDL_CreateTextureFromSurface(renderer, imageSurface3);
     findGold[2].rect = { rand() % 228, rand()%358, imageSurface1->w, imageSurface1->h };
-    //Food
+    //Gold
     findGold[3].texture = SDL_CreateTextureFromSurface(renderer, imageSurface4);
     findGold[3].rect = { rand() % 228, rand()%358, imageSurface1->w, imageSurface1->h };
 
@@ -154,7 +154,7 @@ int main(int argc, char* argv[]) {
         }
 
 
-        //User와 Food가 충돌했는지 확인 
+        //User와 Gold가 충돌했는지 확인 
         if (SDL_HasIntersection(&findGold[0].rect, &findGold[3].rect)) {
             SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_INFORMATION, NULL , "너 재능있어.", window);
             quit = 1;
