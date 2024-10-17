@@ -50,7 +50,7 @@ int main(int argc, char* argv[]) {
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
     IMG_Init(IMG_INIT_JPG | IMG_INIT_PNG);
 
-    FindGold findGold[4]; // = { {WIDTH / 2, HEIGHT - 60, 100, 100}, 0 , 0, NULL };
+    FindGold findGold[4];
 
     SDL_Surface* imageSurface1 = IMG_Load("imgs/user.jpeg");
     SDL_Surface* imageSurface2 = IMG_Load("imgs/monster.png");
@@ -70,17 +70,15 @@ int main(int argc, char* argv[]) {
     findGold[3].texture = SDL_CreateTextureFromSurface(renderer, imageSurface4);
     findGold[3].rect = { rand() % 228, rand()%358, imageSurface1->w, imageSurface1->h };
 
-     while(SDL_HasIntersection(&findGold[0].rect, &findGold[1].rect) ||
+    while(SDL_HasIntersection(&findGold[0].rect, &findGold[1].rect) ||
            SDL_HasIntersection(&findGold[0].rect, &findGold[2].rect)) {
          findGold[1].rect = { rand() % 228, rand()%358, imageSurface1->w, imageSurface1->h };
          findGold[2].rect = { rand() % 228, rand()%358, imageSurface1->w, imageSurface1->h };
          }
     
 
-    //도저히 monster과 user의 delay 시간을 구분할 방법을 못찾아서 인터넷 참고했습니다.
-    Uint32 lastMonsterMoveTime = 0; // 몬스터가 마지막으로 움직인 시간 저장
-    Uint32 monsterMoveInterval = 200; // 몬스터가 400ms마다 움직이도록 설정
-
+    int lastMonsterMoveTime = 0;    // 몬스터가 마지막으로 움직인 시간 저장
+    int monsterMoveInterval = 200;  // 몬스터가 200ms마다 움직이도록 설정
 
 
     // 메시지 루프  0
@@ -115,7 +113,7 @@ int main(int argc, char* argv[]) {
         }
 
         // 몬스터의 움직임을 별도의 시간 조건으로 처리
-        Uint32 currentTime = SDL_GetTicks();        //SDL_GetTicks() : 현재 시간 체크
+        int currentTime = SDL_GetTicks();   //SDL_GetTicks() : 현재 시간 체크
         if (currentTime - lastMonsterMoveTime > monsterMoveInterval) {
             lastMonsterMoveTime = currentTime;
             //Monster1
