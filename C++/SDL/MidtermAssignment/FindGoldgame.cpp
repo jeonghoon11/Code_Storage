@@ -1,5 +1,5 @@
 //주인공이 금을 찾으면 게임 종료. 중간마다 몬스터가 랜덤하게 움직인다.
-// w s a d를 이용하여 주인공을 컨트롤하여 몬스터를 피해 금을 찾아라!
+// w s a d를 이용하여 주인공을 컨트롤하여 몬스터를 피해 동전을 찾아라!
 #include <stdio.h> 
 #include <iostream>
 #include <SDL.h>
@@ -12,7 +12,7 @@
 #define HEIGHT 130*3
 
 typedef struct {    //여러개의 이미지를 표현할 때 구조체가 필요하다고 하심.
-    SDL_Rect rect;
+    SDL_Rect rect;  //직사각형의 위치와 크기를 정의
     int dx, dy;     //왼쪽 상단의 위치값
     SDL_Texture* texture;
 } FindGold;
@@ -47,6 +47,7 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
+    //window : 렌더링할 창, -1 : SDL 드라이버 최적 선택, SDL_REN~ : 렌더링 성능 향상
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
     IMG_Init(IMG_INIT_JPG | IMG_INIT_PNG);
 
@@ -70,6 +71,7 @@ int main(int argc, char* argv[]) {
     findGold[3].texture = SDL_CreateTextureFromSurface(renderer, imageSurface4);
     findGold[3].rect = { rand() % 228, rand()%358, imageSurface1->w, imageSurface1->h };
 
+    //SDL_HasIntersection : rect끼리 겹치는지 구현.
     while(SDL_HasIntersection(&findGold[0].rect, &findGold[1].rect) ||
            SDL_HasIntersection(&findGold[0].rect, &findGold[2].rect)) {
          findGold[1].rect = { rand() % 228, rand()%358, imageSurface1->w, imageSurface1->h };
