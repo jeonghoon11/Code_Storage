@@ -1,16 +1,27 @@
 #include <iostream>
+#include <string>
 using namespace std;
 
 int main() {
-    int *p;
-
-    p = new int;
-    if(!p) {
-        cout << "메모리 X";
-        return 0;
+    string s;
+    cout << "덧셈 문자열을 입력하세요." << endl;
+    getline(cin, s, '\n');
+    int sum = 0;
+    int startIndex = 0;
+    while(true) {
+        int fIndex = s.find('+', startIndex);
+        if(fIndex == -1) {
+            string part = s.substr(startIndex);
+            if(part == "") break;
+            cout << part << endl;
+            sum += stoi(part);
+            break;
+        }
+        int count = fIndex - startIndex;
+        string part = s.substr(startIndex, count);
+        cout << part << endl;
+        sum += stoi(part);
+        startIndex = fIndex + 1;
     }
-
-    *p = 5;
-    int n = *p;
-    cout << "*p = " << *p << 
+    cout << "숫자들의 합은" << sum;
 }
