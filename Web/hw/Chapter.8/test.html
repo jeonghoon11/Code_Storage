@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>transformrotate()</title>
+<script>
+    let n = 2;
+    function scale(obj) {
+        obj.style.transform = "scale(" + n + ", 1)";
+        n++
+    }
+</script>
+</head>
+<body>
+    <h1>클릭하면 2,3,4배로 옆으로 늘어납니다.</h1>
+    <hr>
+    <img src="img.png" width="150" height="150" onclick="scale(this)">
+</body>
+</html>
