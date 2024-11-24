@@ -173,11 +173,6 @@ string Playfair::makeEncryption(string mEncryption){
         findPosition(a, rowA, colA);
         findPosition(b, rowB, colB);
 
-        if(rowA == -1 || rowB == -1){
-            // 유효하지 않은 문자, 무시
-            continue;
-        }
-
         if(rowA == rowB){
             // 같은 행에 있는 경우 오른쪽으로 한 칸 이동
             char textA = mTable[rowA * 5 + (colA + 1) % 5];
