@@ -55,16 +55,16 @@ void Playfair::findPosition(char ch, int &row, int &col) {
 void Playfair::makeTable() {
     string alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     string key = mKey; // 중복 제거된 키값
-    char pairFirst = toupper(mPair[0]);   // 예: 'I'
-    char pairSecond = toupper(mPair[2]);  // 예: 'J'
+    char pairFirst = toupper(mPair[0]);
+    char pairSecond = toupper(mPair[2]);
 
     int tableIndex = 0;
 
-    // 1. 키의 문자들을 테이블에 추가, 쌍의 두 번째 문자를 건너뜀
+    //키의 문자들을 테이블에 추가, 쌍의 두 번째 문자를 건너뜀
     for (int i = 0; i < key.length() && tableIndex < 25; ++i) {
         char ch = toupper(key[i]);
 
-        if(ch == pairSecond) continue; // pairSecond ('J')는 건너뜀
+        if(ch == pairSecond) continue;
 
         // 현재 문자가 이미 테이블에 있는지 확인
         bool isDuplicate = false;
@@ -80,11 +80,11 @@ void Playfair::makeTable() {
         }
     }
 
-    // 2. 알파벳을 순회하며 테이블에 추가, 쌍의 두 번째 문자를 건너뜀
+    //알파벳을 순회하며 테이블에 추가, 쌍의 두 번째 문자를 건너뜀
     for (int i = 0; i < alphabet.length() && tableIndex < 25; ++i) {
         char ch = toupper(alphabet[i]);
 
-        if(ch == pairSecond) continue; // pairSecond ('J')는 건너뜀
+        if(ch == pairSecond) continue;
 
         // 현재 문자가 이미 테이블에 있는지 확인
         bool isDuplicate = false;
@@ -126,19 +126,19 @@ string Playfair::makeEncryption(string mEncryption){
     string paired;
     string resultText;
 
-    // 1. 대문자로 변환하고 pairSecond를 pairFirst로 대체
+    //대문자로 변환하고 pairSecond를 pairFirst로 대체
     for(int i = 0; i < mEncryption.length(); ++i) {
         char ch = mEncryption[i];
         if(isalpha(ch)) {
             ch = toupper(ch);
-            if(ch == toupper(mPair[2])) { // pairSecond ('J')를 pairFirst ('I')로 대체
-                ch = toupper(mPair[0]);    // 'I'
+            if(ch == toupper(mPair[2])) { 
+                ch = toupper(mPair[0]);
             }
             upperProcessed += ch;
         }
     }
 
-    // 2. 페어링: 두 글자씩 페어로 나누기, 동일한 글자가 연속되면 'X' 삽입
+    //두 글자씩 페어로 나누기, 동일한 글자가 연속되면 'X' 삽입
     int i = 0;
     while(i < upperProcessed.length()) {    // 두 문자씩 페어로 처리
         char first = upperProcessed[i];
@@ -164,7 +164,7 @@ string Playfair::makeEncryption(string mEncryption){
         }
     }
 
-    // 3. 암호화: 각 페어에 대해 Playfair 암호 규칙 적용
+    
     for(int j = 0; j < paired.length(); j += 2) {
         char a = paired[j];
         char b = paired[j + 1];
