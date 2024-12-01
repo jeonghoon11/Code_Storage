@@ -4,7 +4,7 @@
 using namespace std;
 
 int main() {
-    Playfair pfair("watermellon", "i/j");
+    Playfair pfair("watermelon", "i/j");
     pfair.makeTable();
     pfair.showTable();
 	cout << "암호화된 문장 : " << pfair.makeEncryption("lemonstrawberryappleiuice") << endl;

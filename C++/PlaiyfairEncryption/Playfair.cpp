@@ -162,8 +162,11 @@ string Playfair::makeEncryption(string beforeEncryptionInput){
         findPosition(a, rowA, colA);
         findPosition(b, rowB, colB);
 
+        //1차원 배열을 2차원 배열로 봤을 때 row*5 + col로 계산. => row(0일때 5개, 1일때 5개)
+        //%의 쓰임 -> 행과 열의 마지막에 도달했을 때 첫 행, 첫 열로 이동하기 위함.
         if(rowA == rowB){
             // 같은 행에 있는 경우 오른쪽으로 한 칸 이동
+            
             char textA = mTable[rowA * 5 + (colA + 1) % 5];
             char textB = mTable[rowB * 5 + (colB + 1) % 5];
             resultText += textA;
