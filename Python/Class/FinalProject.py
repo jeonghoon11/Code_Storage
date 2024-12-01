@@ -4,40 +4,29 @@ from cryptography.hazmat.primitives.hashes import SHA256
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 import os
 
-# AES-GCM 암호화/복호화 함수
-def encrypt_message(session_key, plaintext):
-    aesgcm = AESGCM(session_key)
-    nonce = os.urandom(12)
-    ciphertext = aesgcm.encrypt(nonce, plaintext.encode(), None)
-    return nonce, ciphertext
-
-def decrypt_message(session_key, nonce, ciphertext):
-    aesgcm = AESGCM(session_key)
-    return aesgcm.decrypt(nonce, ciphertext, None).decode()
-
 # Diffie-Hellman 키 교환 및 세션 키 생성
 def diffie_hellman_key_exchange(parameters_a, parameters_b=None):
-    private_key_a = parameters_a.generate_private_key()
-    public_key_a = private_key_a.public_key()
+    private_key_a = parameters_a.generate_private_key() #사용자 A의 비밀키 생성
+    public_key_a = private_key_a.public_key()           #사용자 A의 공개키 생성
 
     if parameters_b is None:
         parameters_b = parameters_a  # 기본적으로 동일한 파라미터 사용
 
-    private_key_b = parameters_b.generate_private_key()
-    public_key_b = private_key_b.public_key()
+    private_key_b = parameters_b.generate_private_key() #사용자 B의 비밀키 생성
+    public_key_b = private_key_b.public_key()           #사용자 B의 공개키 생성
 
     try:
-        shared_key_a = private_key_a.exchange(public_key_b)
-        shared_key_b = private_key_b.exchange(public_key_a)
+        shared_key_a = private_key_a.exchange(public_key_b) #사용자 A와 B 서로의 공개키를 사용해 공유키를 생성
+        shared_key_b = private_key_b.exchange(public_key_a) #사용자 A와 B 서로의 공개키를 사용해 공유키를 생성
 
-        common_salt = os.urandom(16)
+        common_salt = os.urandom(16)    #난수 사용
 
         session_key_a = HKDF(
             algorithm=SHA256(),
             length=32,
             salt=common_salt,
             info=b'OTR Session Key'
-        ).derive(shared_key_a)
+        ).derive(shared_key_a)                          
 
         session_key_b = HKDF(
             algorithm=SHA256(),
@@ -52,7 +41,18 @@ def diffie_hellman_key_exchange(parameters_a, parameters_b=None):
         print(f"키 교환 실패")
         return None, None
 
-암호화 함수
+# AES-GCM 암호화/복호화 함수
+def encrypt_message(session_key, plaintext):
+    aesgcm = AESGCM(session_key)
+    nonce = os.urandom(12)
+    ciphertext = aesgcm.encrypt(nonce, plaintext.encode(), None)
+    return nonce, ciphertext
+
+def decrypt_message(session_key, nonce, ciphertext):
+    aesgcm = AESGCM(session_key)
+    return aesgcm.decrypt(nonce, ciphertext, None).decode()
+
+# 암호화 함수
 def key_exchange(parameters_b=None):
     parameters_a = dh.generate_parameters(generator=2, key_size=2048)
 
@@ -88,7 +88,9 @@ def key_exchange(parameters_b=None):
         print(f"사용자 B의 세션 키: {session_key_b}")
 
 # 암호화 성공
-# key_exchange()
+key_exchange()
+
+print('\n')
 
 # 암호화 실패
 key_exchange(dh.generate_parameters(generator=5, key_size=2048))
