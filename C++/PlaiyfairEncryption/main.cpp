@@ -4,10 +4,10 @@
 using namespace std;
 
 int main() {
-    Playfair pfair("watermelon", "i/j");
+    Playfair pfair("assasinator", "q/z");
     pfair.makeTable();
     pfair.showTable();
-	cout << "암호화된 문장 : " << pfair.makeEncryption("lemonstrawberryappleiuice") << endl;
+	cout << "암호화된 문장 : " << pfair.makeEncryption("becarefull") << endl;
 
     return 0;
 }
