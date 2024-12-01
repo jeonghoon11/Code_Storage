@@ -1,30 +1,18 @@
 #include <iostream>
 #include <string>
+#include "Playfair.h"
 using namespace std;
-
-class Playfair {
-    char mTable[25];
-    string mPair;
-    string mKey;
-public:
-    Playfair(string mKey, string mPair);
-    void makeTable();
-    void showTable();
-	string makeEncryption(string mEncryption);
-    string removeDuplicates(string input);
-	void findPosition(char ch, int &row, int &col);
-};
 
 Playfair::Playfair(string mKey, string mPair) {
     this->mKey = removeDuplicates(mKey);
     this->mPair = mPair;
 }
 
-string Playfair::removeDuplicates(string input){
+string Playfair::removeDuplicates(string mKey){
     string result;
 
-    for (int i = 0; i < input.length(); ++i) {
-        char ch = toupper(input[i]); // 대문자로 변환
+    for (int i = 0; i < mKey.length(); ++i) {
+        char ch = toupper(mKey[i]); // 대문자로 변환
         bool isDuplicate = false;
 
         for (int j = 0; j < result.length(); ++j) {
@@ -60,11 +48,11 @@ void Playfair::makeTable() {
 
     int tableIndex = 0;
 
-    //키의 문자들을 테이블에 추가, 쌍의 두 번째 문자를 건너뜀
+    //키의 문자들을 테이블에 추가
     for (int i = 0; i < key.length() && tableIndex < 25; ++i) {
         char ch = toupper(key[i]);
 
-        if(ch == pairSecond) continue;
+        if(ch == pairSecond) continue;  //두 번째 Pair문자 건너뜀
 
         // 현재 문자가 이미 테이블에 있는지 확인
         bool isDuplicate = false;
@@ -80,11 +68,11 @@ void Playfair::makeTable() {
         }
     }
 
-    //알파벳을 순회하며 테이블에 추가, 쌍의 두 번째 문자를 건너뜀
+    //나머지 알파벳을 테이블에 추가
     for (int i = 0; i < alphabet.length() && tableIndex < 25; ++i) {
         char ch = toupper(alphabet[i]);
 
-        if(ch == pairSecond) continue;
+        if(ch == pairSecond) continue;  //두 번째 Pair문자 건너뜀
 
         // 현재 문자가 이미 테이블에 있는지 확인
         bool isDuplicate = false;
@@ -121,53 +109,54 @@ void Playfair::showTable() { // mTable에 있는 값들을 5 X 5 로 화면에 �
     cout << endl;
 }
 
-string Playfair::makeEncryption(string mEncryption){
-	string upperProcessed;
-    string paired;
+string Playfair::makeEncryption(string beforeEncryptionInput){
+	string preparedInput;
+    string beforeText;
     string resultText;
 
     //대문자로 변환하고 pairSecond를 pairFirst로 대체
-    for(int i = 0; i < mEncryption.length(); ++i) {
-        char ch = mEncryption[i];
+    for(int i = 0; i < beforeEncryptionInput.length(); ++i) {
+        char ch = beforeEncryptionInput[i];
         if(isalpha(ch)) {
             ch = toupper(ch);
             if(ch == toupper(mPair[2])) { 
                 ch = toupper(mPair[0]);
             }
-            upperProcessed += ch;
+            preparedInput += ch;
         }
     }
 
-    //두 글자씩 페어로 나누기, 동일한 글자가 연속되면 'X' 삽입
+    //두 글자씩 끊고, 동일한 글자가 나오면 X 출력
     int i = 0;
-    while(i < upperProcessed.length()) {    // 두 문자씩 페어로 처리
-        char first = upperProcessed[i];
+    while(i < preparedInput.length()) {    // 두 문자씩 끊기.
+        char first = preparedInput[i];
         char second = 'X';    // 기본으로 두 번째 문자는 X로 처리
 
-        if(i + 1 < upperProcessed.length()) {
-            second = upperProcessed[i+1];
+        if(i + 1 < preparedInput.length()) {    //마지막 문자가 아닐 경우
+            second = preparedInput[i+1];
             if(first == second) {
-                paired += first;
-                paired += 'X'; // 항상 대문자 'X' 추가
-                i += 1;
+                beforeText += first;
+                beforeText += 'X'; // 항상 대문자 'X' 추가
+                i += 1;         //second를 first로 두기 위함
             }
             else {
-                paired += first;
-                paired += second;
-                i += 2;
+                beforeText += first;
+                beforeText += second;
+                i += 2;         //first, second 둘다 처리 완료.
             }
         }
-        else {
-            paired += first;
-            paired += 'X'; // 항상 대문자 'X' 추가
+
+        else {      //마지막 문자일 경우
+            beforeText += first;
+            beforeText += 'X'; // 항상 대문자 'X' 추가
             i += 1;
         }
     }
 
-    
-    for(int j = 0; j < paired.length(); j += 2) {
-        char a = paired[j];
-        char b = paired[j + 1];
+    //암호화 시작~
+    for(int j = 0; j < beforeText.length(); j += 2) {
+        char a = beforeText[j];
+        char b = beforeText[j + 1];
 
         int rowA, colA, rowB, colB;
         findPosition(a, rowA, colA);
@@ -180,6 +169,7 @@ string Playfair::makeEncryption(string mEncryption){
             resultText += textA;
             resultText += textB;
         }
+
         else if(colA == colB){
             // 같은 열에 있는 경우 아래로 한 칸 이동
             char textA = mTable[((rowA + 1) % 5) * 5 + colA];
@@ -187,6 +177,7 @@ string Playfair::makeEncryption(string mEncryption){
             resultText += textA;
             resultText += textB;
         }
+
         else{
             // 다른 행과 열에 있는 경우 행과 열을 교환
             char textA = mTable[rowA * 5 + colB];
@@ -199,13 +190,4 @@ string Playfair::makeEncryption(string mEncryption){
     }
 
     return resultText;
-}
-
-int main() {
-    Playfair pfair("watermelon", "i/j");
-    pfair.makeTable();
-    pfair.showTable();
-	cout << "암호화된 문장 : " << pfair.makeEncryption("lemonstrawberryappleiuice") << endl;
-
-    return 0;
 }
