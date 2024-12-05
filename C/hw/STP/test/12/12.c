@@ -32,7 +32,7 @@ const char *classify_token(const char *token) {
     return "symbol";
 }
 
-// Main function
+
 int main() {
     FILE *file = fopen("symbol.txt", "r");
     if (!file) {
@@ -42,43 +42,57 @@ int main() {
 
     char line[MAX_LINE];
     while (fgets(line, sizeof(line), file)) {
-        // Preserve leading tabs
+        
         int leading_tabs = 0;
         while (line[leading_tabs] == '\t') {
             leading_tabs++;
         }
 
-        // Remove trailing newline and whitespace
+        
         line[strcspn(line, "\n")] = '\0';
         while (line[0] && isspace(line[strlen(line) - 1])) {
             line[strlen(line) - 1] = '\0';
         }
 
-        // Skip completely empty lines
+        
         if (strlen(line) == 0) {
             printf("\n");
             continue;
         }
 
-        // Print leading tabs
+        
         for (int i = 0; i < leading_tabs; i++) {
             printf("\t");
         }
 
-        // Tokenize the line
-        int cnt=0;
+        
+        int cnt = 0;
         char *token = strtok(line + leading_tabs, " ,\t");
+        char classifications[MAX_LINE] = "";
+        char tokens[MAX_LINE] = "";
         while (token) {
-            cnt=1;
             const char *classification = classify_token(token);
-            if(!strcmp(classification, "symbol")||!strcmp(classification, "num")) cnt+=2;
-            else if(!strcmp(classification, "reg8")||!strcmp(classification, "reg16")) cnt+=1;
-            printf("%s [%s] ", token, classification); //11주차
-            // printf("%s ", classification);   //기본코드
+            if (!strcmp(classification, "symbol") || !strcmp(classification, "num")) cnt += 2;
+            else if (!strcmp(classification, "reg8") || !strcmp(classification, "reg16")) cnt += 1;
+
+            
+            strcat(tokens, token);
+            strcat(tokens, " ");
+            
+            
+            char temp[MAX_LINE];
+            snprintf(temp, sizeof(temp), "(%s) ", classification);
+            strcat(classifications, temp);
+
             token = strtok(NULL, " ,\t");
         }
-        // printf("%d", cnt);  //12주차
-        printf("\n");
+
+        
+        printf("%s", tokens);
+        printf("%s", classifications);
+
+        
+        printf("%d\n", cnt);
     }
 
     fclose(file);
