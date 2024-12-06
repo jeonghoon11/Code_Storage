@@ -6,18 +6,52 @@
 #include <time.h>
 #include <stdlib.h>
 #include "MemoryGame.h"
+using namespace std;
+#include <string>
+
+#define CPU_SPEED 3000;
 
 int runMemoryGame(SDL_Window* window, SDL_Renderer* renderer) {
     SDL_Texture* texture = NULL;
     SDL_Rect destRect;
 
-    Card6Memory leftCards[8];  // 왼쪽 영역에 생성된 카드들
-    Card6Memory rightCards[8]; // 오른쪽 영역에 생성된 사용자 클릭 카드들
+    Card6Memory leftCards[8];  // CPU 카드
+    Card6Memory rightCards[8]; // User 카드
 
     int card[8] = { 0, 1, 2, 3, 4, 5, 6, 7 };
     int selectedCard[8] = { 0 };
     int cardtemp[8];
     int i, j, temp1, temp2;
+
+    int cpuSpeed;
+    int diffiNum;
+    string difficulty;
+
+    cout << "난이도를 선택하시오. ( 장정훈 | 최상 | 상 | 중 | 하 ): ";
+    cin >> difficulty;
+    if (difficulty == "장정훈") diffiNum = 1;
+    else if (difficulty == "최상") diffiNum = 2;
+    else if (difficulty == "상") diffiNum = 3;
+    else if(difficulty == "중") diffiNum = 4;
+    else diffiNum = 5;
+
+    switch(diffiNum) {
+        case(1):
+            cpuSpeed = 100;
+            break;
+        case(2):
+            cpuSpeed = 500;
+            break;
+        case(3):
+            cpuSpeed = 1000;
+            break;
+        case(4):
+            cpuSpeed = 2000;
+            break;
+        case(5):
+            cpuSpeed = 3000;
+            break;
+    }
 
     srand((unsigned int)time(NULL));
 
@@ -81,7 +115,7 @@ int runMemoryGame(SDL_Window* window, SDL_Renderer* renderer) {
         }
     }
 
-    // 오른쪽 영역에 8개의 카드 생성 (왼쪽 카드의 x 좌표 + 520)
+    // 오른쪽 영역에 8개의 카드 생성 (왼쪽 카드의 x 좌표 + 700)
     for (int i = 0; i < 8; i++) {
         rightCards[i].texture = SDL_CreateTextureFromSurface(renderer, imageSurface[i]);
         rightCards[i].cardValue = card[i];
@@ -99,7 +133,7 @@ int runMemoryGame(SDL_Window* window, SDL_Renderer* renderer) {
     }
 
     SDL_RenderPresent(renderer);
-    SDL_Delay(1000);
+    SDL_Delay(1000);    //카드 가려지는 시간 설정.
 
     for (int i = 0; i < 8; i++) {
         // 왼쪽 카드 뒷면으로 변경
@@ -116,6 +150,9 @@ int runMemoryGame(SDL_Window* window, SDL_Renderer* renderer) {
     SDL_Event event;
     int quit = 0;
     int currentTarget = 0;
+    int leftRevealIndex = 0;
+    int lastLeftRevealTime = 0;     // 왼쪽 카드가 마지막으로 열렸던 시간
+    int leftRevealInterval = cpuSpeed;   // 왼쪽 카드가 1000ms마다 열리도록 설정
 
     while (!quit) {
         while (SDL_PollEvent(&event)) {
@@ -174,6 +211,19 @@ int runMemoryGame(SDL_Window* window, SDL_Renderer* renderer) {
             }
         }
 
+        // 왼쪽 카드 자동 열기 (SDL_GetTicks()를 사용하여 일정한 간격으로 열림)
+        int currentTime = SDL_GetTicks();
+        if (leftRevealIndex < 8 && (currentTime - lastLeftRevealTime > leftRevealInterval)) {
+            lastLeftRevealTime = currentTime;
+
+            SDL_DestroyTexture(leftCards[leftRevealIndex].texture);
+            SDL_FreeSurface(imageSurface[leftRevealIndex]);
+            imageSurface[leftRevealIndex] = IMG_Load(cardImage[leftRevealIndex]);
+            leftCards[leftRevealIndex].texture = SDL_CreateTextureFromSurface(renderer, imageSurface[leftRevealIndex]);
+
+            leftRevealIndex++;
+        }
+
         SDL_RenderClear(renderer);
         SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
 
@@ -183,6 +233,11 @@ int runMemoryGame(SDL_Window* window, SDL_Renderer* renderer) {
             SDL_RenderCopy(renderer, rightCards[i].texture, NULL, &rightCards[i].rect);
         }
         SDL_RenderPresent(renderer);
+
+        if (leftRevealIndex == 8) {
+            SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_INFORMATION, NULL, "실력이 형편없군요", window);
+            quit = 1;
+        }
     }
 
     // 텍스처 및 서피스 정리
@@ -197,5 +252,9 @@ int runMemoryGame(SDL_Window* window, SDL_Renderer* renderer) {
     SDL_FreeSurface(wrongSurface);
 
     IMG_Quit();
+    SDL_DestroyRenderer(renderer);
+    SDL_DestroyWindow(window);
+    SDL_Quit();
+
     return 0;
 }
