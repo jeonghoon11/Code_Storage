@@ -1,49 +1,29 @@
-#include <stdio.h> 
+#include <stdio.h>
 #include <iostream>
-#include <SDL.h> 
+#include <SDL.h>
 #include <SDL_image.h>
 #include <SDL_messagebox.h>
 #include <time.h>
 #include <stdlib.h>
 #include "MemoryGame.h"
 
-int main(int argc, char* argv[]) {
-    SDL_Window* window = NULL;
-    SDL_Renderer* renderer = NULL;
+int runMemoryGame(SDL_Window* window, SDL_Renderer* renderer) {
     SDL_Texture* texture = NULL;
     SDL_Rect destRect;
 
-    Card6Memory card6Game[6];
+    Card6Memory leftCards[8];  // 왼쪽 영역에 생성된 카드들
+    Card6Memory rightCards[8]; // 오른쪽 영역에 생성된 사용자 클릭 카드들
 
-    // SDL 초기화
-    if (SDL_Init(SDL_INIT_VIDEO) < 0) {
-        printf("SDL Initialization Fail: %s\n", SDL_GetError());
-        return 1;
-    }
-
-    // 윈도우 창 생성
-    window = SDL_CreateWindow("SDL2 Window",
-        SDL_WINDOWPOS_UNDEFINED,
-        SDL_WINDOWPOS_UNDEFINED,
-        1200, 800,
-        SDL_WINDOW_SHOWN);
-		
-    if (!window) {
-        printf("SDL Initialization Fail: %s\n", SDL_GetError());
-        SDL_Quit();
-        return 1;
-    }   //여기까지 SDL 윈도우 생성 코드
-
-    int card[6] = { 0, 1, 2, 3, 4, 5};
-    int selectedCard[6] = { 0 };   // 이미 맞힌 카드 여부 저장.
-    int cardtemp[6];
+    int card[8] = { 0, 1, 2, 3, 4, 5, 6, 7 };
+    int selectedCard[8] = { 0 };
+    int cardtemp[8];
     int i, j, temp1, temp2;
 
     srand((unsigned int)time(NULL));
 
-    for (i = 0; i < 6; i++) cardtemp[i] = rand();
+    for (i = 0; i < 8; i++) cardtemp[i] = rand();
 
-    for (i = 5; i > 0; i--) {
+    for (i = 7; i > 0; i--) {
         for (j = 0; j < i; j++) {
             if (cardtemp[j] > cardtemp[j + 1]) {
                 temp1 = cardtemp[j];
@@ -57,148 +37,158 @@ int main(int argc, char* argv[]) {
         }
     }
 
-    //window : 렌더링할 창, -1 : SDL 드라이버 최적 선택, SDL_REN~ : 렌더링 성능 향상
-    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-    IMG_Init(IMG_INIT_JPG | IMG_INIT_PNG);  //이미지 초기화
+    IMG_Init(IMG_INIT_JPG | IMG_INIT_PNG);
 
-    char cardImage[6][23] = {
+    char cardImage[8][23] = {
         "images/character_1.png",
         "images/character_2.png",
         "images/character_3.png",
         "images/character_4.png",
         "images/character_5.png",
-        "images/character_6.png"
+        "images/character_6.png",
+        "images/character_7.png",
+        "images/character_8.png"
     };
 
-    SDL_Surface* imageSurface[6];
+    SDL_Surface* imageSurface[8];
     SDL_Surface* backSurface = IMG_Load("images/character_b.png");
     SDL_Surface* wrongSurface = IMG_Load("images/character_x.png");
 
     SDL_Texture* backTexture = SDL_CreateTextureFromSurface(renderer, backSurface);
     SDL_Texture* wrongTexture = SDL_CreateTextureFromSurface(renderer, wrongSurface);
 
-    int currentTarget = 0;
-
-    for (int i = 0; i < 6; i++) {   //카드 위치 윈도우창에 랜덤으로 정하기
+    // 왼쪽 영역에 8개의 카드 랜덤 생성
+    for (int i = 0; i < 8; i++) {
         imageSurface[i] = IMG_Load(cardImage[card[i]]);
-        card6Game[i].texture = SDL_CreateTextureFromSurface(renderer, imageSurface[i]);
-        card6Game[i].cardValue = card[i]; // 카드의 실제 값 저장
+        leftCards[i].texture = SDL_CreateTextureFromSurface(renderer, imageSurface[i]);
+        leftCards[i].cardValue = card[i];
         selectedCard[i] = 0;
-        
-        bool positionSet = false;   //  겹치는 부분이 있는지 확인하기 위함
+
+        bool positionSet = false;
         while (!positionSet) {
-            card6Game[i].rect = { rand() % 1020, rand() % 620, imageSurface[i] -> w, imageSurface[i] -> h };    //위치 랜덤 생성
-            
-            //이전에 생성된 카드들과 겹치는지 확인
-            bool collision = false; 
+            leftCards[i].rect = { rand() % 520, rand() % 620, imageSurface[i]->w, imageSurface[i]->h };
+
+            bool collision = false;
             for (int j = 0; j < i; j++) {
-                if (SDL_HasIntersection(&card6Game[i].rect, &card6Game[j].rect)) {
-                    collision = true;   //카드 겹침
+                if (SDL_HasIntersection(&leftCards[i].rect, &leftCards[j].rect)) {
+                    collision = true;
                     break;
                 }
             }
-            if (!collision) {   //카드가 겹쳐지지 않았으면
+            if (!collision) {
                 positionSet = true;
             }
         }
     }
 
-    SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_INFORMATION, NULL , "1초 뒤 글자가 가려집니다.", window);
-    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-    SDL_RenderClear(renderer); // 렌더링 버퍼 초기화
+    // 오른쪽 영역에 8개의 카드 생성 (왼쪽 카드의 x 좌표 + 520)
+    for (int i = 0; i < 8; i++) {
+        rightCards[i].texture = SDL_CreateTextureFromSurface(renderer, imageSurface[i]);
+        rightCards[i].cardValue = card[i];
+        rightCards[i].rect = { leftCards[i].rect.x + 700, leftCards[i].rect.y, imageSurface[i]->w, imageSurface[i]->h };
+    }
 
-    for(int i = 0; i < 6; i++) {
-        SDL_RenderCopy(renderer, card6Game[i].texture, NULL, &card6Game[i].rect);
+    SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_INFORMATION, NULL, "1초 뒤 글자가 가려집니다.", window);
+    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+    SDL_RenderClear(renderer);
+
+    // 왼쪽 카드와 오른쪽 카드 모두 그리기
+    for (int i = 0; i < 8; i++) {
+        SDL_RenderCopy(renderer, leftCards[i].texture, NULL, &leftCards[i].rect);
+        SDL_RenderCopy(renderer, rightCards[i].texture, NULL, &rightCards[i].rect);
     }
 
     SDL_RenderPresent(renderer);
     SDL_Delay(1000);
 
-    for( int i = 0; i < 6; i++) {
-        SDL_DestroyTexture(card6Game[i].texture);
+    for (int i = 0; i < 8; i++) {
+        // 왼쪽 카드 뒷면으로 변경
+        SDL_DestroyTexture(leftCards[i].texture);
         SDL_FreeSurface(imageSurface[i]);
         imageSurface[i] = IMG_Load("images/character_b.png");
-        card6Game[i].texture = SDL_CreateTextureFromSurface(renderer, imageSurface[i]);
+        leftCards[i].texture = SDL_CreateTextureFromSurface(renderer, imageSurface[i]);
+
+        // 오른쪽 카드 뒷면으로 변경
+        SDL_DestroyTexture(rightCards[i].texture);
+        rightCards[i].texture = SDL_CreateTextureFromSurface(renderer, imageSurface[i]);
     }
 
-    // 메시지 루프
     SDL_Event event;
     int quit = 0;
+    int currentTarget = 0;
+
     while (!quit) {
         while (SDL_PollEvent(&event)) {
             if (event.type == SDL_QUIT) {
-                quit = true;
+                quit = 1;
             }
-            
+
             if (event.type == SDL_KEYDOWN) {
                 if (event.key.keysym.sym == SDLK_ESCAPE) {
-                    quit = true;
+                    quit = 1;
                 }
             }
-            
+
             if (event.type == SDL_MOUSEBUTTONDOWN) {
                 int x = event.button.x;
                 int y = event.button.y;
-                for (int i = 0; i < 6; i++) {
-                    if ((x >= card6Game[i].rect.x) && (x <= card6Game[i].rect.x + card6Game[i].rect.w) &&
-                        (y >= card6Game[i].rect.y) && (y <= card6Game[i].rect.y + card6Game[i].rect.h)) {
-                        // 카드를 선택함
+                for (int i = 0; i < 8; i++) {
+                    if ((x >= rightCards[i].rect.x) && (x <= rightCards[i].rect.x + rightCards[i].rect.w) &&
+                        (y >= rightCards[i].rect.y) && (y <= rightCards[i].rect.y + rightCards[i].rect.h)) {
                         if (!selectedCard[i]) {
-                            if (card6Game[i].cardValue == currentTarget) {
-                                // 올바른 카드 선택
+                            if (rightCards[i].cardValue == currentTarget) {
                                 selectedCard[i] = 1;
-                                SDL_DestroyTexture(card6Game[i].texture);
+                                SDL_DestroyTexture(rightCards[i].texture);
                                 SDL_FreeSurface(imageSurface[i]);
-                                imageSurface[i] = IMG_Load(cardImage[card6Game[i].cardValue]); // 실제 이미지 로드
-                                card6Game[i].texture = SDL_CreateTextureFromSurface(renderer, imageSurface[i]);
+                                imageSurface[i] = IMG_Load(cardImage[rightCards[i].cardValue]);
+                                rightCards[i].texture = SDL_CreateTextureFromSurface(renderer, imageSurface[i]);
                                 currentTarget++;
-                                // 모든 카드를 찾았는지 확인
-                                if (currentTarget == 6) {
+                                if (currentTarget == 8) {
                                     SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_INFORMATION, NULL, "너 재능있어.", window);
-                                    quit = true;
+                                    quit = 1;
                                 }
                             } else {
-                                // 잘못된 카드 선택
-                                SDL_DestroyTexture(card6Game[i].texture);
+                                SDL_DestroyTexture(rightCards[i].texture);
                                 SDL_FreeSurface(imageSurface[i]);
                                 imageSurface[i] = IMG_Load("images/character_x.png");
-                                card6Game[i].texture = SDL_CreateTextureFromSurface(renderer, imageSurface[i]);
-                                // 화면 업데이트
+                                rightCards[i].texture = SDL_CreateTextureFromSurface(renderer, imageSurface[i]);
+
                                 SDL_RenderClear(renderer);
                                 SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-                                for (int j = 0; j < 6; j++) {
-                                    SDL_RenderCopy(renderer, card6Game[j].texture, NULL, &card6Game[j].rect);
+                                for (int j = 0; j < 8; j++) {
+                                    SDL_RenderCopy(renderer, rightCards[j].texture, NULL, &rightCards[j].rect);
+                                    SDL_RenderCopy(renderer, leftCards[j].texture, NULL, &leftCards[j].rect);
                                 }
                                 SDL_RenderPresent(renderer);
-                                SDL_Delay(1000);
-                                // 다시 뒷면 이미지로 변경
-                                SDL_DestroyTexture(card6Game[i].texture);
+                                SDL_Delay(500);
+
+                                SDL_DestroyTexture(rightCards[i].texture);
                                 SDL_FreeSurface(imageSurface[i]);
                                 imageSurface[i] = IMG_Load("images/character_b.png");
-                                card6Game[i].texture = SDL_CreateTextureFromSurface(renderer, imageSurface[i]);
+                                rightCards[i].texture = SDL_CreateTextureFromSurface(renderer, imageSurface[i]);
                             }
                         }
-                        break; // 한 번의 클릭에 하나의 카드만 처리 break을 안 걸면 틀렸을 때 다른걸 클릭하면 딜레이가 발생해도 여러개가 클릭됩니다.
+                        break;
                     }
                 }
             }
         }
 
-
-        
-        //화면 렌더링
         SDL_RenderClear(renderer);
         SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-        
-        for(int i = 0; i < 6; i++) {
-            SDL_RenderCopy(renderer, card6Game[i].texture, NULL, &card6Game[i].rect);
+
+        // 카드 그리기: 왼쪽 카드와 오른쪽 카드
+        for (int i = 0; i < 8; i++) {
+            SDL_RenderCopy(renderer, leftCards[i].texture, NULL, &leftCards[i].rect);
+            SDL_RenderCopy(renderer, rightCards[i].texture, NULL, &rightCards[i].rect);
         }
         SDL_RenderPresent(renderer);
     }
 
-    // 종료
-    for (int i = 0; i < 6; i++) {
-        SDL_DestroyTexture(card6Game[i].texture);
+    // 텍스처 및 서피스 정리
+    for (int i = 0; i < 8; i++) {
+        SDL_DestroyTexture(leftCards[i].texture);
+        SDL_DestroyTexture(rightCards[i].texture);
         SDL_FreeSurface(imageSurface[i]);
     }
     SDL_DestroyTexture(backTexture);
@@ -206,10 +196,6 @@ int main(int argc, char* argv[]) {
     SDL_FreeSurface(backSurface);
     SDL_FreeSurface(wrongSurface);
 
-
     IMG_Quit();
-    SDL_DestroyRenderer(renderer);
-    SDL_DestroyWindow(window);
-    SDL_Quit();
     return 0;
 }
