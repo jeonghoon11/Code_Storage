@@ -9,8 +9,6 @@
 using namespace std;
 #include <string>
 
-#define CPU_SPEED 3000;
-
 int runMemoryGame(SDL_Window* window, SDL_Renderer* renderer) {
     SDL_Texture* texture = NULL;
     SDL_Rect destRect;
