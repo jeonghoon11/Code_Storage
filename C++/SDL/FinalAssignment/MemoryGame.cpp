@@ -13,11 +13,12 @@ int runMemoryGame(SDL_Window* window, SDL_Renderer* renderer) {
     SDL_Texture* texture = NULL;
     SDL_Rect destRect;
 
-    Card6Memory leftCards[8];  // CPU 카드
-    Card6Memory rightCards[8]; // User 카드
+    // 기존 Card6Memory 대신 DerivedCard 사용
+    DerivedCard leftCards[8];  // CPU 카드
+    DerivedCard rightCards[8]; // User 카드
 
-    int card[8] = { 0, 1, 2, 3, 4, 5, 6, 7 };
-    int selectedCard[8] = { 0 };
+    int card[8] = {0, 1, 2, 3, 4, 5, 6, 7};
+    int selectedCard[8] = {0};
     int cardtemp[8];
     int i, j, temp1, temp2;
 
@@ -30,23 +31,23 @@ int runMemoryGame(SDL_Window* window, SDL_Renderer* renderer) {
     if (difficulty == "장정훈") diffiNum = 1;
     else if (difficulty == "최상") diffiNum = 2;
     else if (difficulty == "상") diffiNum = 3;
-    else if(difficulty == "중") diffiNum = 4;
+    else if (difficulty == "중") diffiNum = 4;
     else diffiNum = 5;
 
-    switch(diffiNum) {
-        case(1):
+    switch (diffiNum) {
+        case (1):
             cpuSpeed = 100;
             break;
-        case(2):
+        case (2):
             cpuSpeed = 500;
             break;
-        case(3):
+        case (3):
             cpuSpeed = 1000;
             break;
-        case(4):
+        case (4):
             cpuSpeed = 2000;
             break;
-        case(5):
+        case (5):
             cpuSpeed = 3000;
             break;
     }
@@ -72,15 +73,8 @@ int runMemoryGame(SDL_Window* window, SDL_Renderer* renderer) {
     IMG_Init(IMG_INIT_JPG | IMG_INIT_PNG);
 
     char cardImage[8][23] = {
-        "images/character_1.png",
-        "images/character_2.png",
-        "images/character_3.png",
-        "images/character_4.png",
-        "images/character_5.png",
-        "images/character_6.png",
-        "images/character_7.png",
-        "images/character_8.png"
-    };
+        "images/character_1.png", "images/character_2.png", "images/character_3.png", "images/character_4.png",
+        "images/character_5.png", "images/character_6.png", "images/character_7.png", "images/character_8.png"};
 
     SDL_Surface* imageSurface[8];
     SDL_Surface* backSurface = IMG_Load("images/character_b.png");
@@ -98,7 +92,7 @@ int runMemoryGame(SDL_Window* window, SDL_Renderer* renderer) {
 
         bool positionSet = false;
         while (!positionSet) {
-            leftCards[i].rect = { rand() % 520, rand() % 620, imageSurface[i]->w, imageSurface[i]->h };
+            leftCards[i].rect = {rand() % 520, rand() % 620, imageSurface[i]->w, imageSurface[i]->h};
 
             bool collision = false;
             for (int j = 0; j < i; j++) {
@@ -117,12 +111,16 @@ int runMemoryGame(SDL_Window* window, SDL_Renderer* renderer) {
     for (int i = 0; i < 8; i++) {
         rightCards[i].texture = SDL_CreateTextureFromSurface(renderer, imageSurface[i]);
         rightCards[i].cardValue = card[i];
-        rightCards[i].rect = { leftCards[i].rect.x + 700, leftCards[i].rect.y, imageSurface[i]->w, imageSurface[i]->h };
+        rightCards[i].rect = {leftCards[i].rect.x + 700, leftCards[i].rect.y, imageSurface[i]->w, imageSurface[i]->h};
     }
 
     SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_INFORMATION, NULL, "1초 뒤 글자가 가려집니다.", window);
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
     SDL_RenderClear(renderer);
+
+    // 세로 선 그리기
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255); // 검은색 선
+    SDL_RenderDrawLine(renderer, 700, 0, 700, 800); // x=700에서 위에서 아래로
 
     // 왼쪽 카드와 오른쪽 카드 모두 그리기
     for (int i = 0; i < 8; i++) {
@@ -131,7 +129,7 @@ int runMemoryGame(SDL_Window* window, SDL_Renderer* renderer) {
     }
 
     SDL_RenderPresent(renderer);
-    SDL_Delay(1000);    //카드 가려지는 시간 설정.
+    SDL_Delay(1000);  // 카드 가려지는 시간 설정.
 
     for (int i = 0; i < 8; i++) {
         // 왼쪽 카드 뒷면으로 변경
