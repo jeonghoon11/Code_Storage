@@ -1,3 +1,5 @@
+mul AL, BL
+mul AL, 2
 mov AX, 257
 mov	CX, -1
 mov	BL, 10
@@ -17,7 +19,7 @@ mov	BX, DATA1
 
 mov	AX, [BX]
 mov	BX, [BP]
-mov	CX, [SI]
+mov	EX, [SI]
 mov	DX, [DI]
 
 mov	DATA1, AX

@@ -1,0 +1,9 @@
+L1: 0030
+L2: 005E
+L3: 006E
+L4: 0078
+L5: 007C
+L6: 0084
+L7: 0088
+Data1: 00B0  WorldType: W 259
+Data2: 00B2  WorldType: W -1

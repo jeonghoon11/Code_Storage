@@ -4,8 +4,8 @@ MOV   b r m 4 8A 00???110
 MOV   w r m 4 8B 00???110
 MOV   b m r 4 88 00???110
 MOV   w m r 4 89 00???110
-MOV   b r i 2 C6 10110???
-MOV   w r i 3 C7 10111???
+MOV   b r i 2 B0 00000000
+MOV   w r i 3 B8 00000000
 MOV   b m i 5 C6 00000110
 MOV   w m i 6 C7 00000110
 MOV   b m a 3 A2 00000000

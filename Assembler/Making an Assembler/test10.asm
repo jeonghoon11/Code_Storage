@@ -17,7 +17,7 @@ mov	BX, DATA1
 
 mov	AX, [BX]
 mov	BX, [BP]
-mov	EX, [SI]
+mov	CX, [SI]
 mov	DX, [DI]
 
 mov	DATA1, AX
