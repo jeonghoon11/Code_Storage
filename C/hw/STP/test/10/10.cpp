@@ -74,11 +74,11 @@ int counter(FILE* fp) {
             bool isInstruction = false;
 
             for (int i = 0; i < instructionLength; i++) {//해당 토큰이 명령어인지 확인 명령어가 맞으면 isInstruction를 참으로
-                if (strcmp(token, instruc[i]) == 0) {
-                    isInstruction = true;
+                // if (strcmp(token, instruc[i]) == 0) {
+                //     isInstruction = true;
                     wordIp+=1;//명령어를 세기 체크
-                    break;
-                }
+                    // break;
+                // }
             }
 
             if (!isInstruction) {//명령어가 아닌 애들만 레지스터인지 확인
@@ -90,7 +90,7 @@ int counter(FILE* fp) {
             ordIp = wordIp;   
             token = strtok(NULL, "\t\n,+[] ");//다음 토큰 불러오기
         }
-        wordIp+=1;//체크
+        wordIp+=1;
     }
     return 1;
 }
@@ -140,11 +140,11 @@ FILE* FileOpenRead(const char* name) {
    fp = fopen(name, "r");
    // 파일 확인
    if (fp == NULL) {
-      printf("%s : 읽기 파일 열기 실패\n", name);
+    //   printf("%s : 읽기 파일 열기 실패\n", name);
       return NULL;
    }
    else {
-      printf("%s : 읽기 파일 열기 성공\n", name);
+    //   printf("%s : 읽기 파일 열기 성공\n", name);
       return fp;
    }
 }
@@ -154,11 +154,11 @@ FILE* FileOpenWrite(const char* name) {
    fp = fopen(name, "w");
    // 파일 확인
    if (fp == NULL) {
-      printf("%s : 쓰기 파일 열기 실패\n", name);
+    //   printf("%s : 쓰기 파일 열기 실패\n", name);
       return NULL;
    }
    else {
-      printf("%s : 쓰기 파일 열기 성공\n", name);
+    //   printf("%s : 쓰기 파일 열기 성공\n", name);
       return fp;
    }
 }
