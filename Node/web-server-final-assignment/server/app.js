@@ -5,7 +5,6 @@ const dbConnect = require("./config/dbConnect4mongo");
 const port = 3000;
 dbConnect();
 
-// 미들웨어 설정
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
