@@ -1,0 +1,22 @@
+{
+  "name": "web-server-final-assignment",
+  "version": "1.0.0",
+  "description": "웹서버 프로그래밍 기말 과제 - MongoDB 기반 RESTful API 서버",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon app.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^17.2.3",
+    "express": "^5.1.0",
+    "express-async-handler": "^1.2.0",
+    "mongoose": "^8.19.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.10"
+  }
+}
